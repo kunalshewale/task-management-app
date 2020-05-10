@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Grid from "@material-ui/core/Grid";
+import AppStyle from "./AppStyle";
+import TaskBoard from "./components/TaskBoard";
 
-function App() {
+const App = () => {
+  const classes = AppStyle();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className={classes.app}>
+      <header className={classes.appHeader}>
+        <p>Task Management</p>
       </header>
+      <Grid container>
+        <Grid item xs={12} className={classes.appContent}>
+          <div className={classes.boardContainer}>
+            <TaskBoard />
+          </div>
+        </Grid>
+      </Grid>
     </div>
   );
-}
+};
 
 export default App;
