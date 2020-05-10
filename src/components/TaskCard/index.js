@@ -30,7 +30,7 @@ class TaskCard extends PureComponent {
               <IconButton
                 className={classes.deleteCardBtn}
                 onClick={() => {
-                  onDelete(taskId, listNumber);
+                  onDelete(listNumber, taskId);
                 }}
               >
                 <i className="material-icons">delete</i>

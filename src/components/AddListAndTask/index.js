@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import { Button } from "@material-ui/core";
+import React, { PureComponent } from "react";
+import { Button, Modal } from "@material-ui/core";
 import AddListForm from "./AddListForm";
 import AddTaskForm from "./AddTaskForm";
 
-class AddListAndTask extends Component {
+class AddListAndTask extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
