@@ -6,7 +6,7 @@ const TaskBoardStyle = (theme) => ({
     padding: "0 0.5rem",
   },
   addListBtn: {
-    background: theme.palette.secondary,
+    background: theme.palette.secondary.main,
   },
   addListForm: {
     display: "flex",
