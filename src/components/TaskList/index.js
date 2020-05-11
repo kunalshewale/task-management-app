@@ -29,35 +29,35 @@ class TaskList extends PureComponent {
         classes={{
           root: classes.list,
         }}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
       >
-        <div onDragOver={onDragOver} onDrop={onDrop}>
-          <div className={classes.listHeader}>
-            <span>{title}</span>
-            <IconButton
-              className={classes.deleteListBtn}
-              onClick={() => onDeleteList(id)}
-            >
-              <i className="material-icons">delete</i>
-            </IconButton>
+        <div className={classes.listHeader}>
+          <span>{title}</span>
+          <IconButton
+            className={classes.deleteListBtn}
+            onClick={() => onDeleteList(id)}
+          >
+            <i className="material-icons">delete</i>
+          </IconButton>
+        </div>
+        <div className={classes.listContent}>
+          <div className={classes.taskContainer}>
+            {cards.map((card, index) => (
+              <TaskCard
+                {...card}
+                onDragStart={onDragStart}
+                key={`Card_${id}_${index}`}
+                onDelete={onDelete}
+              />
+            ))}
           </div>
-          <div className={classes.listContent}>
-            <div className={classes.taskContainer}>
-              {cards.map((card, index) => (
-                <TaskCard
-                  {...card}
-                  onDragStart={onDragStart}
-                  key={`Card_${id}_${index}`}
-                  onDelete={onDelete}
-                />
-              ))}
-            </div>
-            <AddListAndTask
-              classes={classes}
-              listNum={id}
-              onAdd={onAdd}
-              addList={false}
-            />
-          </div>
+          <AddListAndTask
+            classes={classes}
+            listNum={id}
+            onAdd={onAdd}
+            addList={false}
+          />
         </div>
       </Grid>
     );

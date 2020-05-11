@@ -5,7 +5,7 @@ const TaskListStyle = (theme) => ({
   },
   listHeader: {
     backgroundColor: theme.palette.primary.main,
-    height: "2rem",
+    minHeight: "2rem",
     lineHeight: "2rem",
     display: "flex",
     alignItems: "flex-start",
@@ -37,7 +37,7 @@ const TaskListStyle = (theme) => ({
     visibility: "hidden",
   },
   taskContainer: {
-    height: "calc(100% - 3rem)",
+    maxHeight: "14.5rem",
     overflowY: "auto",
   },
   addTaskContainer: {

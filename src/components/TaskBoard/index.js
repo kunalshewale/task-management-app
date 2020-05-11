@@ -136,7 +136,6 @@ class TaskBoard extends Component {
   }
 
   onDeleteTask(listNum, taskId) {
-    console.log("Delere task >>> ", listNum, "/", taskId);
     const taskListsFromLS = localStorage.getItem("taskLists");
     const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
     const cardsArray = parsedTaskListsFromLS[listNum].cards;
