@@ -1,4 +1,12 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import {
+  addTaskList,
+  deleteTaskList,
+  addTask,
+  deleteTask,
+  updateTaskLists,
+} from "../../actions/TaskManagement";
 import { withStyles } from "@material-ui/styles";
 import {
   Grid,
@@ -16,146 +24,17 @@ import AddListAndTask from "../AddListAndTask";
 class TaskBoard extends Component {
   constructor(props) {
     super(props);
-    if (localStorage.getItem("taskLists")) {
-      const taskListsFromLS = localStorage.getItem("taskLists");
-      const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-      this.state = { taskLists: parsedTaskListsFromLS };
-    } else {
-      this.state = {
-        taskLists: [
-          {
-            title: "To Do",
-            id: 0,
-            cards: [
-              {
-                title: "default task card 1",
-                description: "default task card 1 description",
-                listNumber: 0,
-                taskId: 0,
-              },
-              {
-                title: "default task card 2",
-                description: "default task card 2 description",
-                listNumber: 0,
-                taskId: 1,
-              },
-              {
-                title: "default task card 3",
-                description: "default task card 3 description",
-                listNumber: 0,
-                taskId: 2,
-              },
-            ],
-          },
-          {
-            title: "In Progress",
-            id: 1,
-            cards: [
-              {
-                title: "default task card 1",
-                description: "default task card 1 description",
-                listNumber: 1,
-                taskId: 0,
-              },
-              {
-                title: "default task card 2",
-                description: "default task card 2 description",
-                listNumber: 1,
-                taskId: 1,
-              },
-            ],
-          },
-          {
-            title: "Done",
-            id: 2,
-            cards: [
-              {
-                title: "default task card 1",
-                description: "default task card 1 description",
-                listNumber: 2,
-                taskId: 0,
-              },
-              {
-                title: "default task card 2",
-                description: "default task card 2 description",
-                listNumber: 2,
-                taskId: 1,
-              },
-            ],
-          },
-        ],
-        open: false,
-      };
-
-      localStorage.setItem("taskLists", JSON.stringify(this.state.taskLists));
-    }
-  }
-
-  onAddList(title) {
-    const taskListsFromLS = localStorage.getItem("taskLists");
-    const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-    const newList = {
-      id: new Date().valueOf(),
-      title,
-      cards: [],
+    this.state = {
+      open: false,
     };
-    parsedTaskListsFromLS.push(newList);
-    this.setState({
-      taskLists: parsedTaskListsFromLS,
-    });
-    localStorage.setItem("taskLists", JSON.stringify(parsedTaskListsFromLS));
-  }
-
-  onDeleteList(listNum) {
-    const taskListsFromLS = localStorage.getItem("taskLists");
-    const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-    const indexOfList = parsedTaskListsFromLS.findIndex(
-      (list) => +list.id === +listNum
-    );
-    parsedTaskListsFromLS.splice(indexOfList, 1);
-    this.setState({
-      taskLists: parsedTaskListsFromLS,
-      open: true,
-    });
-    localStorage.setItem("taskLists", JSON.stringify(parsedTaskListsFromLS));
-  }
-
-  onAddTask(title, listNumber) {
-    const taskListsFromLS = localStorage.getItem("taskLists");
-    const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-    const newTask = {
-      title,
-      listNumber,
-      taskId: new Date().valueOf(),
-    };
-    parsedTaskListsFromLS[listNumber].cards.push(newTask);
-    this.setState({
-      taskLists: parsedTaskListsFromLS,
-    });
-    localStorage.setItem("taskLists", JSON.stringify(parsedTaskListsFromLS));
-  }
-
-  onDeleteTask(listNum, taskId) {
-    const taskListsFromLS = localStorage.getItem("taskLists");
-    const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-    const cardsArray = parsedTaskListsFromLS[listNum].cards;
-    const indexOfCard = cardsArray.findIndex(
-      (card) => +card.taskId === +taskId
-    );
-    parsedTaskListsFromLS[listNum].cards.splice(indexOfCard, 1);
-    this.setState({
-      taskLists: parsedTaskListsFromLS,
-    });
-    localStorage.setItem("taskLists", JSON.stringify(parsedTaskListsFromLS));
+    this.draggedTask = null;
   }
 
   onDragStart = (e, listRef) => {
-    const draggedTask = {
+    this.draggedTask = {
       taskId: e.currentTarget.id,
       listRef,
     };
-
-    localStorage.setItem("draggedTask", JSON.stringify(draggedTask));
   };
 
   onDragOver = (e) => {
@@ -163,29 +42,22 @@ class TaskBoard extends Component {
   };
 
   onDrop = (e, listNum) => {
-    const droppedTask = localStorage.getItem("draggedTask");
-    const taskListsFromLS = localStorage.getItem("taskLists");
-    const parsedTaskListsFromLS = JSON.parse(taskListsFromLS);
-    const parsedDraggedTask = JSON.parse(droppedTask);
-    const cardsArray = parsedTaskListsFromLS[parsedDraggedTask.listRef].cards;
+    const droppedTask = this.draggedTask;
+    const taskLists = [...this.props.taskLists];
+    const cardsArray = taskLists[droppedTask.listRef].cards;
     const taskCard = cardsArray.find((card) => {
-      return +card.taskId === +parsedDraggedTask.taskId;
+      return +card.taskId === +droppedTask.taskId;
     });
     const indexOfCard = cardsArray.findIndex(
-      (card) => +card.taskId === +parsedDraggedTask.taskId
+      (card) => +card.taskId === +droppedTask.taskId
     );
-    parsedTaskListsFromLS[parsedDraggedTask.listRef].cards.splice(
-      indexOfCard,
-      1
-    );
-    parsedTaskListsFromLS[listNum].cards.push({
+    taskLists[droppedTask.listRef].cards.splice(indexOfCard, 1);
+    taskLists[listNum].cards.push({
       ...taskCard,
       listNumber: +listNum,
     });
-    this.setState({
-      taskLists: parsedTaskListsFromLS,
-    });
-    localStorage.setItem("taskLists", JSON.stringify(parsedTaskListsFromLS));
+    this.props.updateTaskLists(taskLists);
+    this.draggedTask = null;
   };
 
   handleModalStatus(open) {
@@ -204,7 +76,7 @@ class TaskBoard extends Component {
   }
 
   handleDelete() {
-    this[this.deleteData.callBack](
+    this.props[this.deleteData.callBack](
       this.deleteData.listNum,
       this.deleteData.taskId
     );
@@ -214,15 +86,15 @@ class TaskBoard extends Component {
 
   render() {
     const { classes } = this.props;
-    const TaskListsView = this.state.taskLists.map((listItem, index) => (
+    const TaskListsView = this.props.taskLists.map((listItem, index) => (
       <TaskList
         {...listItem}
-        onAdd={(title, listNumber) => this.onAddTask(title, listNumber)}
+        onAdd={(title, listNumber) => this.props.addTask({ title, listNumber })}
         onDelete={(listNum, taskId) =>
-          this.showDeleteConfirmation(listNum, taskId, "onDeleteTask")
+          this.showDeleteConfirmation(listNum, taskId, "deleteTask")
         }
         onDeleteList={(listNum) =>
-          this.showDeleteConfirmation(listNum, "", "onDeleteList")
+          this.showDeleteConfirmation(listNum, "", "deleteTaskList")
         }
         onDragStart={(e, fromList) => this.onDragStart(e, `${listItem.id}`)}
         onDragOver={(e) => this.onDragOver(e)}
@@ -237,7 +109,7 @@ class TaskBoard extends Component {
         <AddListAndTask
           classes={classes}
           addList
-          onAdd={(title) => this.onAddList(title)}
+          onAdd={(title) => this.props.addTaskList(title)}
         />
         {TaskListsView}
         <Dialog
@@ -273,4 +145,18 @@ class TaskBoard extends Component {
   }
 }
 
-export default withStyles(TaskBoardStyle)(TaskBoard);
+const mapStateToProps = (state) => ({
+  taskLists: state.taskManagement.taskLists,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  addTaskList: (payload) => dispatch(addTaskList(payload)),
+  deleteTaskList: (payload) => dispatch(deleteTaskList(payload)),
+  addTask: (payload) => dispatch(addTask(payload)),
+  deleteTask: (payload) => dispatch(deleteTask(payload)),
+  updateTaskLists: (payload) => dispatch(updateTaskLists(payload)),
+});
+
+export default withStyles(TaskBoardStyle)(
+  connect(mapStateToProps, mapDispatchToProps)(TaskBoard)
+);

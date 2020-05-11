@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { Button, Modal } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import AddListForm from "./AddListForm";
 import AddTaskForm from "./AddTaskForm";
 
